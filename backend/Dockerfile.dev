@@ -1,0 +1,50 @@
+# syntax = docker/dockerfile:1
+
+# Development image for the Rails API.
+#
+# This is intentionally optimized for local iteration, not production: gems
+# are baked into the image (cached in their own layer + a named volume, see
+# compose.yaml) while application code is bind-mounted so changes are picked
+# up immediately via Rails' code reloading.
+ARG RUBY_VERSION=3.3.5
+FROM docker.io/library/ruby:${RUBY_VERSION}-slim
+
+WORKDIR /rails
+
+# System packages needed to build native gem extensions (e.g. pg) and to
+# talk to Postgres from the container.
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y \
+      build-essential \
+      curl \
+      git \
+      libpq-dev \
+      libvips \
+      pkg-config \
+      postgresql-client && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives
+
+ENV RAILS_ENV="development" \
+    BUNDLE_PATH="/usr/local/bundle"
+
+# Match the bundler version pinned in Gemfile.lock
+RUN gem install bundler -v 2.5.16
+
+# Install gems in their own layer so it's only rebuilt when the Gemfile changes
+COPY Gemfile Gemfile.lock ./
+RUN bundle install
+
+# Copy the rest of the application. In development this is overridden at
+# runtime by the bind mount configured in compose.yaml, but it keeps the
+# image runnable standalone too.
+COPY . .
+
+RUN chmod +x bin/docker-entrypoint
+
+EXPOSE 3000
+
+# Prepares (creates/migrates) the database and then boots the server. This
+# only succeeds once Postgres is reachable, which compose.yaml guarantees by
+# waiting for the db service's healthcheck before starting this container.
+ENTRYPOINT ["./bin/docker-entrypoint"]
+CMD ["./bin/rails", "server", "-b", "0.0.0.0"]

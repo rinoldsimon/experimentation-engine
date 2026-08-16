@@ -1,0 +1,7 @@
+if ! command -v foreman &> /dev/null
+then
+    echo "Foreman is not installed globally. Running via backend bundle..."
+    cd backend && bundle exec foreman start -f ../Procfile.dev
+else
+    foreman start -f Procfile.dev
+fi

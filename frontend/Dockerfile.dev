@@ -1,0 +1,28 @@
+# syntax = docker/dockerfile:1
+
+# Development image for the Vite + React SPA.
+#
+# Dependencies are installed at build time (cached in their own layer + a
+# named volume, see compose.yaml) while source files are bind-mounted so
+# Vite's dev server can hot-module-reload instantly on change.
+ARG NODE_VERSION=24.18.0
+FROM node:${NODE_VERSION}-slim
+
+WORKDIR /app
+
+# Install dependencies in their own layer so it's only rebuilt when the
+# lockfile changes
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# Copy the rest of the application. In development this is overridden at
+# runtime by the bind mount configured in compose.yaml, but it keeps the
+# image runnable standalone too.
+COPY . .
+
+EXPOSE 5173
+
+# --host binds the dev server to 0.0.0.0 (also set via server.host in
+# vite.config.ts) so it's reachable from the browser on the host machine,
+# not just from inside the container.
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

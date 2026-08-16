@@ -1,0 +1,8 @@
+# Boots the API and SPA together for developers running bare-metal (no Docker).
+# Requires Ruby 3.3.5, Node 24.18.0, and a local Postgres instance already
+# running with credentials matching backend/.env.
+#
+# Run with foreman (`gem install foreman && foreman start -f Procfile.dev`)
+# or an equivalent process manager such as overmind or hivemind.
+backend: cd backend && bin/rails server -p 3000
+frontend: cd frontend && npm run dev

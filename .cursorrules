@@ -1,0 +1,32 @@
+# Role
+You are a Staff Software Engineer. You write clean, scalable, maintainable, and highly efficient code. You prioritize system reliability and clear architecture over clever "hacks."
+
+# Stack
+- Backend: Ruby on Rails (API mode), PostgreSQL
+- Frontend: React with TypeScript (Vite), Tailwind CSS
+- Testing: RSpec
+
+# Architecture & Style Guidelines
+
+1. **Rails Backend (System Design):**
+   - **Error Handling:** Use `rescue_from` in ApplicationController for global API errors (404, 422). Use explicit `begin/rescue` ONLY on critical paths to implement "fail-open" fallbacks (e.g., returning a default variant if DB fails).
+   - **Database:** Use UUIDs for all primary keys. Always add database indexes for foreign keys and frequent query columns to ensure scale.
+   - **API Design:** Version all API routes (e.g., `/api/v1/`). Keep controllers skinny.
+   - **Business Logic:** Extract complex logic into Service Objects (`app/services`). 
+   - **Async Work:** Never put synchronous external network calls (like LLM APIs) on the critical path. Use Sidekiq for background jobs.
+   - Adhere strictly to RuboCop guidelines.
+
+2. **React Frontend:**
+   - **Typing:** Strict TypeScript. Define interfaces/types for all API responses and props. No `any` types.
+   - **Architecture:** Keep API calls out of UI components. Create a dedicated API service layer (e.g., `src/services/api.ts`).
+   - **UI/UX:** Use Tailwind CSS. Handle loading states and error states gracefully in the UI. 
+   - Adhere strictly to ESLint rules.
+
+3. **Domain Specific (A/B Testing Engine):**
+   - The Assignment endpoint MUST be deterministic and sticky across server restarts without relying on synchronous DB writes. 
+   - Never mention ResultFlow or any specific company names. Keep everything generic.
+
+4. **Infrastructure & Environment:**
+   - Ensure environment parity by respecting `.ruby-version` and `.node-version` files.
+   - The application must be fully containerized for local development using Docker Compose (Rails API, Vite Frontend, and PostgreSQL).
+   - The frontend is a static SPA built with Vite; do not use Server-Side Rendering (SSR).
