@@ -10,8 +10,42 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 0) do
+ActiveRecord::Schema[7.2].define(version: 2026_08_16_085427) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pgcrypto"
   enable_extension "plpgsql"
 
+  create_table "events", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "experiment_id", null: false
+    t.uuid "variant_id"
+    t.string "visitor_id", null: false
+    t.string "event_type", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["experiment_id", "visitor_id", "event_type"], name: "index_events_on_experiment_visitor_and_event_type"
+    t.index ["experiment_id"], name: "index_events_on_experiment_id"
+    t.index ["variant_id"], name: "index_events_on_variant_id"
+  end
+
+  create_table "experiments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_experiments_on_name", unique: true
+  end
+
+  create_table "variants", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "experiment_id", null: false
+    t.string "name", null: false
+    t.integer "weight", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["experiment_id", "name"], name: "index_variants_on_experiment_id_and_name", unique: true
+    t.index ["experiment_id"], name: "index_variants_on_experiment_id"
+  end
+
+  add_foreign_key "events", "experiments"
+  add_foreign_key "events", "variants"
+  add_foreign_key "variants", "experiments"
 end

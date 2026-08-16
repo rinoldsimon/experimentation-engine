@@ -5,4 +5,9 @@ Rails.application.routes.draw do
   # container orchestrators can verify the app is live.
   get "up" => "health#show", as: :rails_health_check
   root "health#show"
+
+  namespace :api do
+    namespace :v1 do
+    end
+  end
 end
