@@ -20,7 +20,7 @@ RUN npm ci
 # image runnable standalone too.
 COPY . .
 
-EXPOSE 5173
+EXPOSE 4000
 
 # --host binds the dev server to 0.0.0.0 (also set via server.host in
 # vite.config.ts) so it's reachable from the browser on the host machine,

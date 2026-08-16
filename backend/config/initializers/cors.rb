@@ -6,7 +6,7 @@
 # Read more: https://github.com/cyu/rack-cors
 
 # TODO: Restrict origins to the deployed frontend URL(s) once known instead of
-# allowing "*". Wide open for now so the Vite dev server (localhost:5173) and
+# allowing "*". Wide open for now so the Vite dev server (localhost:4000) and
 # any other client can reach the API during early development.
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do

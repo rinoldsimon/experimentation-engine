@@ -40,7 +40,7 @@ docker compose up --build
 docker compose exec backend bin/rails db:create db:migrate
 ```
 
-* **Frontend Dashboard:** http://localhost:5173
+* **Frontend Dashboard:** http://localhost:4000
 * **Backend API Health Check:** http://localhost:3000
 
 ---
@@ -51,11 +51,20 @@ If you prefer running the stack natively on your machine:
 
 #### 1. Configure Environment Variables
 ```bash
-# Navigate to backend and copy the template
+# Backend: navigate to backend and copy the template
 cd backend
 cp .env.example .env
+cd ..
+
+# Frontend: navigate to frontend and copy the template
+cd frontend
+cp .env.example .env
+cd ..
 ```
-*Update `.env` with your local PostgreSQL credentials.*
+*Update `backend/.env` with your local PostgreSQL credentials. The frontend
+requires `VITE_API_URL` to be set — the template points it at
+`http://localhost:3000`, and you only need to change it if your API isn't
+running on the default host/port.*
 
 #### 2. Install Dependencies & Setup Database
 ```bash
@@ -83,7 +92,8 @@ From the project root directory, run the executable dev script. This will boot b
 
 * **CORS & APIs:** The Rails backend acts strictly as a headless API. The root path (`/`) serves a JSON health check.
 * **Secrets:** Environment-specific database credentials are isolated in `backend/.env` (ignored by git).
-* **Environment Parity:** `.env.example` provides template configurations for all required environment variables without exposing sensitive values.
+* **Environment Parity:** `.env.example` files (in both `backend/` and `frontend/`) provide template configurations for all required environment variables without exposing sensitive values.
+* **Frontend API URL:** The SPA reads its backend base URL from `VITE_API_URL` (see `frontend/src/services/api.ts`), which throws a clear startup error if it's unset rather than silently falling back to a default. Local development and Docker Compose provide it via `.env`/`compose.yaml`; in production (e.g. Render), it's set via the platform's dashboard env vars rather than a committed `.env` file.
 
 ---
 
