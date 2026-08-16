@@ -21,7 +21,12 @@ services:
       context: ./backend
       dockerfile: Dockerfile.dev
     env_file:
-      - ./backend/.env
+      # Optional: backend/.env is gitignored and only exists if a developer
+      # created it (e.g. for native/Option B setup). Docker Compose already
+      # gets everything it needs via `environment` below, so don't fail a
+      # fresh clone's `docker compose up` just because the file is absent.
+      - path: ./backend/.env
+        required: false
     environment:
       RAILS_ENV: development
       # Overrides backend/.env so the API connects to the `db` service

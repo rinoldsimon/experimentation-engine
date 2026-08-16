@@ -1,0 +1,16 @@
+#!/bin/sh
+set -e
+
+# Self-heal node_modules: the bind-mounted source (see compose.yaml) sits on
+# top of a named volume at /app/node_modules, which can end up empty or
+# stale relative to package-lock.json (e.g. Docker's copy-on-create volume
+# seeding not kicking in on a fresh clone, or a dependency being added after
+# the volume already exists). npm mirrors package-lock.json into
+# node_modules/.package-lock.json on every install, so comparing the two is
+# a fast, reliable drift check -- the same idea as the backend's
+# `bundle check || bundle install`.
+if ! cmp -s package-lock.json node_modules/.package-lock.json 2>/dev/null; then
+  npm ci
+fi
+
+exec "$@"
