@@ -16,6 +16,15 @@ RSpec.describe "Api::V1::Assignments", type: :request do
         expect(Event.last.event_type).to eq("exposure")
       end
 
+      it "includes the variant's content, so a demo page can render it" do
+        experiment = create(:experiment, status: :running)
+        create(:variant, experiment:, name: "A", weight: 100, content: "Free shipping today!")
+
+        get "/api/v1/assignments", params: { experiment_name: experiment.name, visitor_id: "visitor-1" }
+
+        expect(response.parsed_body["content"]).to eq("Free shipping today!")
+      end
+
       it "does not log a second exposure for a repeat visit" do
         experiment = create(:experiment, status: :running)
         create(:variant, experiment:, name: "A", weight: 100)
@@ -61,6 +70,19 @@ RSpec.describe "Api::V1::Assignments", type: :request do
       get "/api/v1/assignments", params: { experiment_name: experiment.name }
 
       expect(response).to have_http_status(:unprocessable_content)
+    end
+
+    context "when the database is unavailable and nothing is cached (see ExperimentLookup)" do
+      it "still returns 200 with a fixed, always-available Control placeholder instead of a 5xx" do
+        allow(ExperimentLookup).to receive(:find_by_name!).and_raise(
+          ExperimentLookup::Unavailable, "Experiment configuration is temporarily unavailable"
+        )
+
+        get "/api/v1/assignments", params: { experiment_name: "any-experiment", visitor_id: "visitor-1" }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body).to include("name" => "control", "degraded" => true)
+      end
     end
   end
 end

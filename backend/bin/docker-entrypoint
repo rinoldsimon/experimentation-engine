@@ -7,10 +7,7 @@ fi
 
 # If running the rails server then create or migrate existing database
 if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
-  # Self-heal the gem bundle: in development the bind-mounted Gemfile.lock
-  # can drift ahead of what's actually installed in the bundle_data volume
-  # (e.g. after adding a gem), since that named volume persists across
-  # rebuilds. `bundle check` is a fast no-op when everything matches.
+  # Self-heal: the bundle_data volume can drift behind Gemfile.lock.
   bundle check || bundle install
   ./bin/rails db:prepare
 fi

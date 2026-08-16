@@ -21,16 +21,11 @@ services:
       context: ./backend
       dockerfile: Dockerfile.dev
     env_file:
-      # Optional: backend/.env is gitignored and only exists if a developer
-      # created it (e.g. for native/Option B setup). Docker Compose already
-      # gets everything it needs via `environment` below, so don't fail a
-      # fresh clone's `docker compose up` just because the file is absent.
+      # Optional: backend/.env is gitignored, only present for native setup.
       - path: ./backend/.env
         required: false
     environment:
       RAILS_ENV: development
-      # Overrides backend/.env so the API connects to the `db` service
-      # instead of localhost.
       DB_HOST: db
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
@@ -41,8 +36,6 @@ services:
       - bundle_data:/usr/local/bundle
     depends_on:
       db:
-        # Blocks backend startup until Postgres reports healthy via the
-        # healthcheck above, rather than racing it on container boot.
         condition: service_healthy
     stdin_open: true
     tty: true
@@ -52,12 +45,9 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.dev
     environment:
-      # Ensures file changes are detected on filesystems/mounts where
-      # native OS file-watching events don't propagate into the container.
+      # Needed for file-watching to work reliably across mounted filesystems.
       CHOKIDAR_USEPOLLING: "true"
-      # api.ts requires VITE_API_URL to be set; the browser (not the
-      # container) makes requests, so this points at the backend's port
-      # mapped to the host rather than the `backend` service DNS name.
+      # The browser (not the container) makes requests, so use the host port.
       VITE_API_URL: http://localhost:3000
     ports:
       - "4000:4000"

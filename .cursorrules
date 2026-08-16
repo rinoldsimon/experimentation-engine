@@ -24,7 +24,7 @@ You are a Staff Software Engineer. You write clean, scalable, maintainable, and 
 
 3. **Domain Specific (A/B Testing Engine):**
    - The Assignment endpoint MUST be deterministic and sticky across server restarts without relying on synchronous DB writes. 
-   - Never mention ResultFlow or any specific company names. Keep everything generic.
+   - Never mention any specific company or product names. Keep everything generic.
 
 4. **Infrastructure & Environment:**
    - Ensure environment parity by respecting `.ruby-version` and `.node-version` files.

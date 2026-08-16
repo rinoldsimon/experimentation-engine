@@ -8,6 +8,7 @@ import { hasConverted, markConverted } from "../utils/conversionFlag"
 
 interface UseExperimentResult {
   variantName: string | null
+  content: string | null
   loading: boolean
   error: string | null
   hasConverted: boolean
@@ -15,12 +16,8 @@ interface UseExperimentResult {
 }
 
 /**
- * Fetches this visitor's sticky assignment for `experimentName` and exposes
- * a `trackConversion` callback that reports a conversion for that same
- * assignment. The visitor id is resolved once via localStorage so repeat
- * calls (and reloads) stay pinned to the same variant, and a matching
- * `converted_${experimentName}` flag persists whether this visitor has
- * already converted so demo UIs can stay in a "done" state across reloads.
+ * Fetches this visitor's sticky assignment for `experimentName`, and exposes
+ * `trackConversion` to report a conversion against it.
  */
 export function useExperiment(experimentName: string): UseExperimentResult {
   const [assignment, setAssignment] = useState<Assignment | null>(null)
@@ -54,7 +51,8 @@ export function useExperiment(experimentName: string): UseExperimentResult {
   }, [experimentName])
 
   const trackConversion = useCallback(async () => {
-    if (!assignment) return
+    // No-op in the degraded/fail-open case -- there's no real variant id to attribute to.
+    if (!assignment || assignment.degraded || !assignment.experiment_id || !assignment.id) return
 
     await trackEvent({
       experiment_id: assignment.experiment_id,
@@ -69,6 +67,7 @@ export function useExperiment(experimentName: string): UseExperimentResult {
 
   return {
     variantName: assignment?.name ?? null,
+    content: assignment?.content ?? null,
     loading,
     error,
     hasConverted: converted,

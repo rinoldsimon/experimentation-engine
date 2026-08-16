@@ -2,6 +2,7 @@ import { BrowserRouter, Link, NavLink, Route, Routes } from "react-router-dom"
 import DashboardPage from "./pages/DashboardPage"
 import PricingDemoPage from "./pages/PricingDemoPage"
 import CheckoutDemoPage from "./pages/CheckoutDemoPage"
+import GenericDemoPage from "./pages/GenericDemoPage"
 
 function navLinkClassName({ isActive }: { isActive: boolean }) {
   return isActive ? "font-semibold text-indigo-600" : "text-slate-600 hover:text-slate-900"
@@ -35,6 +36,7 @@ function App() {
             <Route path="/" element={<DashboardPage />} />
             <Route path="/demo/pricing" element={<PricingDemoPage />} />
             <Route path="/demo/checkout" element={<CheckoutDemoPage />} />
+            <Route path="/demo/:experimentName" element={<GenericDemoPage />} />
           </Routes>
         </main>
       </div>

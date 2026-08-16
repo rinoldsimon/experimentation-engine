@@ -12,7 +12,8 @@ const MOCK_CART_ITEMS = [
 const MOCK_CART_TOTAL = "$91.00"
 
 export default function CheckoutDemoPage() {
-  const { variantName, loading, error, hasConverted, trackConversion } = useExperiment(CHECKOUT_UPSELL_EXPERIMENT)
+  const { variantName, content, loading, error, hasConverted, trackConversion } =
+    useExperiment(CHECKOUT_UPSELL_EXPERIMENT)
   const [checkingOut, setCheckingOut] = useState(false)
 
   async function handleCompleteCheckout() {
@@ -35,7 +36,7 @@ export default function CheckoutDemoPage() {
     <div className={`mx-auto max-w-md space-y-6 ${showStickyFooter ? "pb-16" : ""}`}>
       {showHeaderBanner && (
         <div className="rounded-lg bg-emerald-600 px-4 py-2 text-center text-sm font-semibold text-white">
-          🚚 Free shipping on all orders!
+          🚚 {content ?? "Free shipping on all orders!"}
         </div>
       )}
 
@@ -79,7 +80,9 @@ export default function CheckoutDemoPage() {
             </button>
 
             {showInlineShipping && (
-              <span className="text-xs font-semibold whitespace-nowrap text-emerald-600">🚚 Free shipping</span>
+              <span className="text-xs font-semibold whitespace-nowrap text-emerald-600">
+                🚚 {content ?? "Free shipping"}
+              </span>
             )}
           </div>
         </div>
@@ -91,7 +94,7 @@ export default function CheckoutDemoPage() {
 
       {showStickyFooter && (
         <div className="fixed inset-x-0 bottom-0 z-10 bg-emerald-600 px-4 py-3 text-center text-sm font-semibold text-white shadow-lg">
-          🚚 Free shipping unlocked — sticking with you through checkout!
+          🚚 {content ?? "Free shipping unlocked — sticking with you through checkout!"}
         </div>
       )}
     </div>

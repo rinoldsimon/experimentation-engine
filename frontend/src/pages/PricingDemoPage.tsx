@@ -11,7 +11,8 @@ const PLAN_COPY: Record<string, { label: string; price: string; cadence: string 
 }
 
 export default function PricingDemoPage() {
-  const { variantName, loading, error, hasConverted, trackConversion } = useExperiment(PRICING_PLAN_EXPERIMENT)
+  const { variantName, content, loading, error, hasConverted, trackConversion } =
+    useExperiment(PRICING_PLAN_EXPERIMENT)
   const [subscribing, setSubscribing] = useState(false)
 
   async function handleSubscribe() {
@@ -50,6 +51,9 @@ export default function PricingDemoPage() {
                 {plan.price}
                 <span className="text-lg font-medium text-slate-500">{plan.cadence}</span>
               </p>
+              {/* Seed content mirrors the label ("Monthly plan") -- only show it as a
+                  separate tagline once it's been customized to say something else. */}
+              {content && content !== plan.label && <p className="mt-2 text-sm text-indigo-600 italic">{content}</p>}
             </>
           ) : (
             <p className="text-slate-500">Unrecognized variant: {variantName}</p>

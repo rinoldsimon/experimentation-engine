@@ -1,1 +1,8 @@
 @import "tailwindcss";
+
+@layer base {
+  /* Browsers don't give <button> a pointer cursor by default -- unlike <a>. */
+  button:not(:disabled) {
+    cursor: pointer;
+  }
+}

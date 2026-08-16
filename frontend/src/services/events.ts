@@ -9,10 +9,7 @@ export interface CreateEventPayload {
 
 export interface TrackEventResult {
   id: string | null
-  // false when the event wasn't newly recorded -- either it was a duplicate
-  // of an existing event, or the experiment is paused (see EventsController,
-  // which mirrors AssignmentsController's kill switch: no exposure gets
-  // logged while paused, so no conversion should either).
+  // false when the event was a duplicate, or the experiment is paused.
   tracked: boolean
 }
 

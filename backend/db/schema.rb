@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_08_16_141027) do
+ActiveRecord::Schema[7.2].define(version: 2026_08_16_184624) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -32,6 +32,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_08_16_141027) do
     t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "source", default: "manual", null: false
     t.index ["name"], name: "index_experiments_on_name", unique: true
   end
 
@@ -41,6 +42,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_08_16_141027) do
     t.integer "weight", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "content"
+    t.string "content_source", default: "manual", null: false
     t.index ["experiment_id", "name"], name: "index_variants_on_experiment_id_and_name", unique: true
     t.index ["experiment_id"], name: "index_variants_on_experiment_id"
   end

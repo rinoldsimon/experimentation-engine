@@ -1,11 +1,6 @@
 import type { Experiment, Variant } from "../services/types"
 
-/**
- * The variant with the highest conversion rate within an experiment, or
- * `null` if there's no single winner to declare -- either the experiment
- * doesn't have at least one conversion yet (every variant sits at a 0%
- * rate), or two or more variants are tied for the top rate.
- */
+/** Highest-converting variant, or null if there are no conversions yet or it's a tie. */
 export function findWinningVariant(experiment: Experiment): Variant | null {
   if (experiment.conversions_count < 1) {
     return null

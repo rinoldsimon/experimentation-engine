@@ -1,9 +1,6 @@
 class AddUniqueIndexToEvents < ActiveRecord::Migration[7.2]
   def up
-    # Safety net for any environment that already has duplicate events from
-    # before this fix (e.g. a demo visitor double-clicking "Subscribe"):
-    # keep only the earliest event per (experiment, visitor, event_type) so
-    # the unique index below doesn't fail to apply.
+    # Dedupe first so the new unique index below doesn't fail to apply.
     execute <<~SQL
       DELETE FROM events e
       USING (

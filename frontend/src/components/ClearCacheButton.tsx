@@ -1,5 +1,4 @@
-// Wipes the persisted visitor id (and anything else stored locally) so the
-// next assignment request is indistinguishable from a brand new visitor.
+// Wipes the persisted visitor id so the next request looks like a new visitor.
 function handleClearCacheAndReload() {
   localStorage.clear()
   window.location.reload()

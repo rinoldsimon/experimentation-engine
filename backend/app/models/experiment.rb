@@ -1,7 +1,8 @@
 class Experiment < ApplicationRecord
-  # A simple two-state kill switch: experiments are either serving traffic
-  # (running) or bypassed entirely in favor of the Control variant (paused).
+  # Kill switch: paused bypasses hashing entirely, always serves Control.
   enum :status, { running: 0, paused: 1 }
+  # Display-only provenance: which flow created this experiment.
+  enum :source, { manual: "manual", ai_draft: "ai_draft" }, default: "manual"
 
   has_many :variants, dependent: :destroy
   has_many :events, dependent: :destroy

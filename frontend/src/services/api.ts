@@ -9,11 +9,7 @@ if (!apiUrl) {
 
 export const API_BASE_URL = apiUrl
 
-/**
- * Raised whenever a request fails, whether due to a network failure or a
- * non-2xx response from the API. Callers can inspect `status` and `details`
- * to render a meaningful error state in the UI.
- */
+/** Raised for network failures or non-2xx responses; carries `status`/`details`. */
 export class ApiError extends Error {
   readonly status: number
   readonly details: unknown
@@ -60,12 +56,7 @@ function extractErrorMessage(payload: unknown, status: number): string {
   return `Request failed with status ${status}`
 }
 
-/**
- * Centralized fetch wrapper for all API calls. Resolves relative paths
- * against VITE_API_URL, attaches JSON headers, and normalizes both network
- * and HTTP errors into ApiError so callers only need to handle a single
- * error type.
- */
+/** Centralized fetch wrapper: resolves against VITE_API_URL, normalizes errors to ApiError. */
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const { body, headers, ...rest } = options
 

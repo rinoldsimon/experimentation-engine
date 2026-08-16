@@ -11,9 +11,17 @@ module Api
         }
       end
 
-      # Kill switch: flips an experiment between running and paused. Paused
-      # experiments are handled in AssignmentsController by always serving
-      # the Control variant.
+      # Configuration API -- see ExperimentCreationService for weight
+      # validation and optional LLM content generation.
+      def create
+        experiment = ExperimentCreationService.call(**experiment_params)
+
+        render json: serialize_experiment(experiment, {}, {}), status: :created
+      rescue ExperimentCreationService::WeightsInvalid => e
+        render json: { error: e.message }, status: :unprocessable_content
+      end
+
+      # Kill switch: flips between running and paused.
       def toggle_status
         experiment = Experiment.find(params[:id])
         experiment.update!(status: experiment.running? ? :paused : :running)
@@ -25,11 +33,36 @@ module Api
         render json: serialize_experiment(experiment, exposures_by_variant, conversions_by_variant)
       end
 
+      # Deletion is restricted to AI-drafted experiments -- the showcase/seeded
+      # ones are meant to stay put, so this can't be used to wipe them out.
+      def destroy
+        experiment = Experiment.find(params[:id])
+        return render_not_deletable unless experiment.ai_draft?
+
+        experiment.destroy!
+        head :no_content
+      end
+
       private
 
-      # Grouping by variant_id (rather than experiment_id) lets the frontend
-      # compare variants within an experiment to highlight a winner, and the
-      # experiment-level totals below are simply the sum of its variants'.
+      def render_not_deletable
+        render json: { error: "Only AI-drafted experiments can be deleted" }, status: :unprocessable_content
+      end
+
+      def experiment_params
+        permitted = params.require(:experiment).permit(
+          :name, :status, :source,
+          variants: [ :name, :weight, :content, :content_source, :content_prompt, :fallback_content ]
+        )
+
+        {
+          name: permitted[:name],
+          status: permitted[:status],
+          source: permitted[:source],
+          variants: (permitted[:variants] || []).map { |variant| variant.to_h.symbolize_keys }
+        }
+      end
+
       def event_counts_by_variant(event_type, variant_ids: nil)
         scope = Event.where(event_type:)
         scope = scope.where(variant_id: variant_ids) if variant_ids
@@ -45,6 +78,7 @@ module Api
           id: experiment.id,
           name: experiment.name,
           status: experiment.status,
+          source: experiment.source,
           variants:,
           exposures_count:,
           conversions_count:,
@@ -60,6 +94,8 @@ module Api
           id: variant.id,
           name: variant.name,
           weight: variant.weight,
+          content: variant.content,
+          content_source: variant.content_source,
           exposures_count:,
           conversions_count:,
           conversion_rate: conversion_rate(exposures_count, conversions_count)
