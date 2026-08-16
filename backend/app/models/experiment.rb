@@ -1,5 +1,7 @@
 class Experiment < ApplicationRecord
-  enum :status, { pending: 0, running: 1, stopped: 2 }
+  # A simple two-state kill switch: experiments are either serving traffic
+  # (running) or bypassed entirely in favor of the Control variant (paused).
+  enum :status, { running: 0, paused: 1 }
 
   has_many :variants, dependent: :destroy
   has_many :events, dependent: :destroy

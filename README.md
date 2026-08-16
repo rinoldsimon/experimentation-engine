@@ -71,7 +71,7 @@ running on the default host/port.*
 # Install backend gems and prepare DB
 cd backend
 bundle install
-bin/rails db:create db:migrate
+bin/rails db:create db:migrate db:seed
 cd ..
 
 # Install frontend dependencies
@@ -85,6 +85,16 @@ From the project root directory, run the executable dev script. This will boot b
 ```bash
 ./bin/dev
 ```
+
+---
+
+## 🌱 Database Seeding
+
+`backend/db/seeds.rb` resets local experiment data to two realistic demo experiments: `pricing_plan_default` (two variants, split 50/50) and `checkout_upsell_placement` (three variants — `header_banner`, `cart_inline`, `sticky_footer` — split 34/33/33, to demonstrate that variant weights don't need to be an even split as long as they sum to 100). It is **destructive**: it starts with `Experiment.destroy_all`, wiping every experiment, variant, and event. It intentionally creates zero `Event` records so exposures/conversions read as 0 on the Dashboard until you generate real traffic through the Demo pages (`/demo/pricing`, `/demo/checkout`) — that's how you manually confirm tracking is actually wired up end to end, rather than seeing pre-populated numbers.
+
+**Local Development:** `docker compose up` runs this automatically on the *first* boot only. The backend's `docker-entrypoint` calls `bin/rails db:prepare`, and Rails' `db:prepare` task only loads `db/seeds.rb` when it also had to create the database from scratch — on every subsequent boot the database already exists, so `db:prepare` just runs pending migrations and leaves your data alone. To reseed intentionally, run `docker compose exec backend bin/rails db:seed` (or `bin/rails db:seed` natively).
+
+> ⚠️ **Production Deployment (Render): never automate `db:seed`.** Run it manually, exactly once, via the Render Shell (`bin/rails db:seed`) — for example right after the very first deploy, or deliberately when you want to reset demo data. **Do not** add `db:seed` to Render's build command or any deploy hook: since it calls `Experiment.destroy_all`, running it on every deploy would silently delete every real experiment (and its historical events) each time you ship a change.
 
 ---
 

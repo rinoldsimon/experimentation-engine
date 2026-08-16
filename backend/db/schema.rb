@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_08_16_085427) do
+ActiveRecord::Schema[7.2].define(version: 2026_08_16_141027) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -22,7 +22,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_08_16_085427) do
     t.string "event_type", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["experiment_id", "visitor_id", "event_type"], name: "index_events_on_experiment_visitor_and_event_type"
+    t.index ["experiment_id", "visitor_id", "event_type"], name: "index_events_on_experiment_visitor_and_event_type", unique: true
     t.index ["experiment_id"], name: "index_events_on_experiment_id"
     t.index ["variant_id"], name: "index_events_on_variant_id"
   end

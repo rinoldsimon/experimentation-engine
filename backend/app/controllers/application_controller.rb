@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::API
   rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
-  rescue_from ActiveRecord::RecordInvalid, with: :render_unprocessable_entity
-  rescue_from ActionController::ParameterMissing, with: :render_unprocessable_entity
+  rescue_from ActiveRecord::RecordInvalid, with: :render_unprocessable_content
+  rescue_from ActionController::ParameterMissing, with: :render_unprocessable_content
 
   private
 
@@ -9,7 +9,7 @@ class ApplicationController < ActionController::API
     render json: { error: exception.message }, status: :not_found
   end
 
-  def render_unprocessable_entity(exception)
-    render json: { error: exception.message }, status: :unprocessable_entity
+  def render_unprocessable_content(exception)
+    render json: { error: exception.message }, status: :unprocessable_content
   end
 end

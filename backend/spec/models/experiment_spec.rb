@@ -22,12 +22,12 @@ RSpec.describe Experiment, type: :model do
     expect(duplicate.errors[:name]).to include("has already been taken")
   end
 
-  it "defaults to a pending status" do
-    expect(Experiment.new.status).to eq("pending")
+  it "defaults to a running status" do
+    expect(Experiment.new.status).to eq("running")
   end
 
   it "exposes the expected statuses" do
-    expect(Experiment.statuses.keys).to contain_exactly("pending", "running", "stopped")
+    expect(Experiment.statuses.keys).to contain_exactly("running", "paused")
   end
 
   it "destroys its variants when destroyed" do
