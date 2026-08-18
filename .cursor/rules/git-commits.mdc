@@ -1,0 +1,25 @@
+---
+description: Keep git commit messages short and subject-line only
+alwaysApply: true
+---
+
+# Git commits
+
+When the user asks to commit:
+
+- Subject line only. No body, no bullet list, no "why" paragraph.
+- One short line, under ~72 characters.
+- Conventional prefix when it fits: `feat:`, `fix:`, `chore:`, `docs:`, `test:`, `refactor:`.
+- Describe what changed, not the story of the session.
+
+```
+# BAD — too long, nobody reads this
+feat: add LLM-assisted experiment drafting with Gemini, fail-open
+ExperimentLookup cache, generic demo routes, and dashboard delete
+for AI-drafted experiments
+
+This commit introduces several features to satisfy the assignment...
+
+# GOOD
+feat: add AI experiment drafting and fail-open assignment cache
+```

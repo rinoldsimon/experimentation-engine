@@ -30,3 +30,8 @@ You are a Staff Software Engineer. You write clean, scalable, maintainable, and 
    - Ensure environment parity by respecting `.ruby-version` and `.node-version` files.
    - The application must be fully containerized for local development using Docker Compose (Rails API, Vite Frontend, and PostgreSQL).
    - The frontend is a static SPA built with Vite; do not use Server-Side Rendering (SSR).
+
+5. **Git commits:**
+   - Subject line only. No body, no bullets, no explanation.
+   - One short line, under ~72 characters.
+   - Conventional prefix when it fits (`feat:`, `fix:`, `chore:`, `docs:`).
